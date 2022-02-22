@@ -2,7 +2,7 @@
 
 ----------------
 
-### Repo for Security in Computing(CIS 3360) project 1 for Spring 2022 at University of Central Florida.
+### Repo for Security in Computing(CIS 3360) project 1 for Spring 2022 at University of Central Florida using C.
 
 In this assignment you’ll write a program that encrypts the alphabetic letters in a file using the
 Vigènere cipher. Your program will take two command line parameters containing the names
