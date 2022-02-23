@@ -4,9 +4,9 @@
 | Author: Poojan Yagnik
 | Language: c
 |
-| To Compile: gcc -o pa01 pa01.c
+| To Compile: gcc -o VigènereCipher VigènereCipher.c
 |
-| To Execute: c -> ./pa01 kX.txt pX.txt
+| To Execute: c -> ./VigènereCipher kX.txt pX.txt
 |                   where kX.txt is the keytext file
 |                   and pX.txt is plaintext file
 |
