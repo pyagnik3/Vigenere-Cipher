@@ -4,6 +4,14 @@
 
 ### Repo for Security in Computing(CIS 3360) project 1 for Spring 2022 at University of Central Florida using C.
 
+### To Compile
+
+```
+// Note: swap kX and pX with the appropriate file number.
+$ gcc -o pa01 pa01.c
+$ ./pa01 kX.txt pX.txt
+```
+
 In this assignment you’ll write a program that encrypts the alphabetic letters in a file using the
 Vigènere cipher. Your program will take two command line parameters containing the names
 of the file storing the encryption key and the file to be encrypted. The program must generate
@@ -71,14 +79,3 @@ the key file, an 8 bit ASCII string terminated by a a newline character. The sec
 the name of the plaintext file, an 8 bit ASCII string terminated by a a newline character. Note thatthese input files may contain non-alphabetic characters (numbers, punctuation, white spaces,
 etc.). The valid inputs, as discussed previously, may be any alphabetic character, and should be
 converted to lower case.
-
-1.2.5 Program execution - example
-
-Note that the commands below are also outlined later on in this document for either c, c++,
-or Java. Also note that the first parameter is the key filename and the second parameter is the
-plaintext filename.
-
-```
-$ gcc -o pa01 pa01.c
-$ ./pa01 kX.txt pX.txt
-```
