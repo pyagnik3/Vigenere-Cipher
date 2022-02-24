@@ -18,126 +18,161 @@
 |
 +=============================================================================*/
 
-// Important header files.
-#include <ctype.h>
-#include <stdlib.h>
+// Important header files. 
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
-// Defines.
-#define MAX 513
-#define stringLimit 80
+// Set values.
+#define MAX 512
+#define lineLimit 80
 
-// FIle Pointer.
-FILE* filePointer;
+// Function to process alphabetics only.
+char* onlyAlphabetics(FILE* filePointer, int* position) {
 
-// Funtion Prototyped.
-char* readInFile(char* fileName);
-char* vigenereCipher(char* plainText, int finalLen, char* key, int keyLen);
+    char* tmpArr = malloc(sizeof(char) * (512 + 1)); 
+    char currentChar = '\0';
+    tmpArr[0] = '\0';
 
-int main(int argc, char** argv) {
+    while((currentChar = fgetc(filePointer)) != EOF) {
+        
+        if(!isalpha(currentChar)) continue;
 
-    int i, keyLen, plainLen, finalLen;
+        currentChar = tolower(currentChar);
+        tmpArr[(*position)++] = currentChar;
+        tmpArr[*position] = '\0'; 
 
-    // Read in the key file. 
-    char* key = readInFile(argv[1]); 
-
-    // Read in the plain text file. 
-    char* plainText = readInFile(argv[2]);
-
-    keyLen = strlen(key);
-    plainLen = strlen(plainText);
-
-    printf("\n\nVigenere Key:\n\n");
-    printf("%s\n\n", key);
-    printf("\nPlaintext:\n\n");
-    printf("%s\n", plainText);
-
-    if(keyLen > plainLen) {
-        finalLen = keyLen - plainLen; 
-    } else if(keyLen == plainLen) {
-        finalLen = keyLen;
-    } else {
-        finalLen = plainLen - keyLen;
-    }
-
-    // Padding with 'x'.
-    for(i = 0; i < finalLen; i++) {
-        plainText[plainLen + i] = 'x';
-    }
-
-    finalLen += plainLen;
-
-    printf("\n");
-    printf("Ciphertext:\n\n");
-
-    plainText = vigenereCipher(plainText, finalLen, key, keyLen);
-    finalLen = strlen(plainText);
-
-    // Print ater every 80 char.
-    for(i = 0; i < finalLen; i++) {
-
-        printf("%c", plainText[i]);
-        if((i+1) % stringLimit == 0) printf("\n");
-
-    }
-
-    printf("\n");
-    return 0;
+        if((*position) == MAX) return tmpArr;
     
-}
-
-// Function to read in and return the file. 
-char* readInFile(char* fileName) {
-
-    int counter = 0;
-    char character;
-    char* file;
-
-    filePointer = fopen(fileName, "r");
-    if(filePointer == NULL) return NULL;
-
-    character = fgetc(filePointer);
-    file = malloc(sizeof(char) * MAX);
-
-    while(character != EOF) {
-
-        if(!isalpha(character)) {
-            character = fgetc(filePointer);
-            continue;
-        }
-
-        if(isupper(character)) {
-            character = tolower(character);
-        }
-
-        file[counter++] = character;
-        character = fgetc(filePointer);
-
     }
-    
-    file[counter] = '\0';
-    fclose(filePointer);
-    return file;
+
+    // Return to the function that called it.
+    return tmpArr;
 
 }
 
-// Function to create the cipher text.
-char* vigenereCipher(char* plainText, int finalLen, char* key, int keyLen) {
+// Function used for reading in the key.
+char* readKey(char* keyFile) {
 
-    int i, j, cipher;
-    char* tmpArr = malloc(sizeof(char) * MAX);
+    // If empty return NULL.
+    if(keyFile == NULL) return NULL;
 
-    for(i = 0, j = 0; i < finalLen; i++) {
+    int position = 0;
+    char* tmpKey = NULL;
+    FILE* filePointer = NULL;
 
-        cipher = tolower(key[j % keyLen]) - 'a';
-        tmpArr[i] = 'a' + (plainText[i] - 'a' + cipher) % 26;
+    filePointer = fopen(keyFile, "r");
+    if(!(filePointer = fopen(keyFile, "r"))) return NULL;
+
+    tmpKey = onlyAlphabetics(filePointer, &position);
+    tmpKey[position] = '\0';
+    
+    // Return the key to get printed.
+    return tmpKey;
+
+}
+
+// Funtion to read in the plain text.
+char* readPlaintext(char* plainFile) {
+
+    // If empty return Null.
+    if (plainFile == NULL) return NULL;
+
+    int position = 0;
+    char* tmpPlainText = NULL;    
+    FILE* filePointer = NULL;
+
+    filePointer = fopen(plainFile, "r");
+    if (!(filePointer = fopen(plainFile, "r"))) return NULL;
+    
+    tmpPlainText = onlyAlphabetics(filePointer, &position);
+
+    // Pad with 'x'
+    while (position < MAX) {
+        tmpPlainText[position++] = 'x'; 
+    }
+
+    // Set last char to '\0' and then return to be printed. 
+    tmpPlainText[position] = '\0'; 
+    return tmpPlainText;
+
+}
+
+// Creating a cipher using the vegenere algorithm.
+char* createCipher(char* plainText, char* key) {
+
+    int i, j;
+    int keyVal, plainVal,  inputVal;
+    char* cipherText = malloc(sizeof(char) * (MAX + 1)); 
+
+    // Vigenere algorithm.
+    for(i = j = 0; i < MAX; i++) {
+
+        if(key[j] == '\0') j = 0;
+
+        keyVal = key[j] - 'a';
+        plainVal = plainText[i] - 'a';
+        inputVal = (keyVal + plainVal) % 26;
+        cipherText[i] = tolower('a' + inputVal);
+        j++;
+
+    }
+
+    // Return the cipher to main to be printed.
+    return cipherText;
+
+}
+
+// Function to print 80 letters per line.
+void printOutText(char* textToPrint) {
+
+    int i = 0, j = 0;
+
+    while(textToPrint[i] != '\0') {
+
+        if (j == lineLimit) {
+            j = 0;
+            printf("\n");
+        }
+
+        printf("%c", textToPrint[i]);
+        i++;
         j++;
 
     }
 
     printf("\n");
-    return tmpArr;
+
+}
+
+// Mainly used for passing to functions and printing.
+int main(int argc, char **argv) {
+        
+    char* key = NULL;
+    char* plainText = NULL; 
+    char* cipherText = NULL;
+    
+    // Read in and print out the key.
+    printf("\n\nVigenere Key:\n\n");
+    if(!(key = readKey(argv[1]))) return 0;
+    printOutText(key);
+
+    // Read in and print out the plain text.
+    printf("\n\nPlaintext:\n\n");
+    if(!(plainText = readPlaintext(argv[2]))) return 0;
+    printOutText(plainText);
+
+    // Create and print out the cipher text.
+    cipherText = createCipher(plainText, key);
+    printf("\n\nCiphertext:\n\n");
+    printOutText(cipherText);
+
+    // free allocated space. 
+    free(plainText);
+    free(key);
+    free(cipherText);
+
+    return 0;
 
 }
 
